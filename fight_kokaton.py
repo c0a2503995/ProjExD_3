@@ -160,6 +160,28 @@ class Score:
         self.img = self.fonto.render(f"Score: {self.score}", 0, self.color)
         screen.blit(self.img, self.rct)
 
+class Explosion:
+    """
+    explosion effect class
+    """
+    def __init__(self, bomb: "Bomb"):
+        self.img0 = pg.image.load("fig/explosion.gif")
+        self.img = pg.transform.flip(self.img0, True, False)
+        self.imgs = [self.img0, self.img]
+        self.img = self.imgs[0]
+        self.rct = self.img.get_rect()
+        self.rct.center = bomb.rct.center
+        self.life = 50  
+        
+    def update(self, screen: pg.Surface):
+        """
+        爆発経過時間lifeを1減算し，lifeが正なら画像を交互に切り替えて表示する
+        variable screen: pg.Surface
+        """
+        self.life -= 1
+        if self.life > 0:
+            self.img = self.imgs[(self.life // 5) % 2]
+            screen.blit(self.img, self.rct)
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -170,6 +192,7 @@ def main():
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     beams = []
     score = Score()
+    explosions = []
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -197,6 +220,7 @@ def main():
                 for j, beam in enumerate(beams):
                     if beam is not None and bomb is not None:
                         if beam.rct.colliderect(bomb.rct):  # ビームと爆弾の衝突判定
+                            explosions.append(Explosion(bomb))
                             beams[j] = None
                             bombs[i] = None
                             score.score += 1
@@ -206,6 +230,7 @@ def main():
         bombs = [bomb for bomb in bombs if bomb is not None]
         beams = [beam for beam in beams if beam is not None] 
         beams = [beam for beam in beams if check_bound(beam.rct) == (True, True)]
+        explosions = [explosion for explosion in explosions if explosion.life > 0]
                                       
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
@@ -213,6 +238,8 @@ def main():
             beam.update(screen)  
         for bomb in bombs: 
             bomb.update(screen)
+        for explosion in explosions:
+            explosion.update(screen)
         score.update(screen)
         pg.display.update()
         tmr += 1
@@ -224,25 +251,3 @@ if __name__ == "__main__":
     main()
     pg.quit()
     sys.exit()
-
-
-
-class Score:
-    """
-    打ち落とした爆弾の数をスコアとして表示するクラス
-    """
-    def __init__(self):
-        self.fonto = pg.font.Font(None, 50)
-        self.color = (0, 0, 255)  # 青
-        self.score = 0  # スコアの初期値
-        self.img = self.fonto.render(f"Score: {self.score}", 0, self.color)
-        self.rct = self.img.get_rect()
-        self.rct.center = (100, HEIGHT - 50)  # 画面左下
-
-    def update(self, screen: pg.Surface):
-        """
-        現在のスコアを表示する文字列Surfaceを生成し，画面に転送する
-        引数 screen：画面Surface
-        """
-        self.img = self.fonto.render(f"Score: {self.score}", 0, self.color)
-        screen.blit(self.img, self.rct)
