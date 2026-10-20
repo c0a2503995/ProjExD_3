@@ -166,7 +166,7 @@ class Explosion:
     """
     def __init__(self, bomb: "Bomb"):
         self.img0 = pg.image.load("fig/explosion.gif")
-        self.img = pg.transform.flip(self.img0, True, False)
+        self.img = pg.transform.flip(self.img0, True, True)
         self.imgs = [self.img0, self.img]
         self.img = self.imgs[0]
         self.rct = self.img.get_rect()
