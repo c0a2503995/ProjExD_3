@@ -140,6 +140,7 @@ class Bomb:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
+
 class Score:
     """
     shown how many bomb is hit
@@ -159,6 +160,7 @@ class Score:
         """
         self.img = self.fonto.render(f"Score: {self.score}", 0, self.color)
         screen.blit(self.img, self.rct)
+
 
 class Explosion:
     """
@@ -182,6 +184,7 @@ class Explosion:
         if self.life > 0:
             self.img = self.imgs[(self.life // 5) % 2]
             screen.blit(self.img, self.rct)
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
